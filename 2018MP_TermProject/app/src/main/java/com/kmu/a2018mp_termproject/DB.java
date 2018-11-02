@@ -27,39 +27,48 @@ public class DB extends SQLiteOpenHelper {
     //DB에 데이터를 삽입 할 때 사용되는 함수. db를 쓰기모드로 열고, 쓴 다음 닫아준다.
     public void insert(String date, String item, int price){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("INSERT INTO ACCOUNTBOOK VALUES(null, '" + item + ", " + price + ", " + date + "');");
+        db.execSQL("INSERT INTO ACCOUNTBOOK VALUES(null,'" + item + "', '" + price + "', '" + date + "');");
         db.close();
     }
 
     //DB에 데이터를 수정 할 때 사용되는 함수. db를 쓰기모드로 열고, 쓴 다음 닫아준다.
-    public void update(String item, int price){
+    public void update(String item, int price, String date){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("UPDATE ACCOUNTBOOK SET price = "+ price +" WHERE item = "+ item +" ");
         db.close();
     }
 
     //DB에서 데이터를 삭제한다.
-    public void delete(String item){
+    public void delete(String date,int price ,String item){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM ACCOUNTBOOK WHERE item = '"+item+"';");
+        db.execSQL("DELETE FROM ACCOUNTBOOK WHERE item = "+item+"  AND date = "+date+" AND price ="+price+";");
         db.close();
     }
 
-    //DB의 데이터를 모두 표시한다.
-    public String getResult(String searchDate){
+    //날짜에 맞는 데이터를 표시한다.
+    public String[] getResult(String searchDate){
         SQLiteDatabase db = getReadableDatabase();
-        String result = "";
+        String[] result = {""};
+        Cursor cursor;
 
-        Cursor cursor = db.rawQuery("SELECT * FROM ACCOUNTBOOK WHERE date == searchDate", null);
+        if (searchDate == ""){
+            cursor = db.rawQuery("SELECT * FROM ACCOUNTBOOK",null);
+        }
+        else{
+            cursor = db.rawQuery("SELECT * FROM ACCOUNTBOOK WHERE date = '"+searchDate+"'", null);
+        }
+
+        int i = 0;
+
         while(cursor.moveToNext()){
-            result += cursor.getString(0)
+            result[0] += cursor.getString(0)
                     + ":"
                     + cursor.getString(1)
                     + " | "
                     + cursor.getInt(2)
                     + "원"
-                    + cursor.getString(3)
-                    + "\n";
+                    + cursor.getString(3);
+            i++;
         }
 
         return result;

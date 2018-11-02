@@ -3,6 +3,7 @@ package com.kmu.a2018mp_termproject;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Button search;
 
     private ListView contentList;
+    private ArrayAdapter<String> mAdapter;
 
 
     @Override
@@ -39,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DB(MainActivity.this,"AccountBook.db",null,1);
 
-        date = (TextView)findViewById(R.id.date);
+
+        editDate = (EditText)findViewById(R.id.editDate);date = (TextView)findViewById(R.id.date);
         price = (TextView)findViewById(R.id.price);
         category = (TextView)findViewById(R.id.category);
         content = (TextView)findViewById(R.id.content);
         tag = (TextView)findViewById(R.id.tag);
 
-        editDate = (EditText)findViewById(R.id.editDate);
         editPrice = (EditText)findViewById(R.id.editPrice);
         editCategory = (EditText)findViewById(R.id.editCategory);
         editContent = (EditText)findViewById(R.id.editContent);
@@ -57,11 +59,34 @@ public class MainActivity extends AppCompatActivity {
         search = (Button)findViewById(R.id.search);
 
         contentList = (ListView)findViewById(R.id.contentList);
-        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(MainActivity.this,0);
+        mAdapter = new ArrayAdapter<String>(MainActivity.this,0);
         contentList.setAdapter(mAdapter);
+
+
+        insert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                insertData();
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteData();
+            }
+        });
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchData();
+            }
+        });
     }
 
     private void insertData(){
+
         String tmpDate = editDate.getText().toString();
         String tmpItem = editContent.getText().toString();
         int tmpPrice = Integer.parseInt(editPrice.getText().toString());
@@ -69,4 +94,33 @@ public class MainActivity extends AppCompatActivity {
 
         db.insert(tmpDate,tmpItem,tmpPrice);
     }
+
+    private void searchData(){
+        String tmpDate = editDate.getText().toString();
+
+        String[] result = db.getResult(tmpDate);
+
+        for (int j = 0 ; j < result.length; j++ ){
+            mAdapter.add(result[j]);
+        }
+
+        mAdapter.notifyDataSetChanged();     // ListView refresh
+    }
+
+    private void deleteData(){
+        String tmpDate = editDate.getText().toString();
+        String tmpItem = editContent.getText().toString();
+        int tmpPrice = Integer.parseInt(editPrice.getText().toString());
+
+        db.delete(tmpDate,tmpPrice,tmpItem);
+
+    }
+
+    /*
+    private void modifyData(){
+        String tmpDate = editDate.getText().toString();
+        String tmpItem = editContent.getText().toString();
+        int tmpPrice = Integer.parseInt(editPrice.getText().toString());
+    }
+    */
 }
