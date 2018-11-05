@@ -3,12 +3,16 @@ package com.kmu.a2018mp_termproject;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView contentList;
     private ArrayAdapter<String> mAdapter;
+
+    private ArrayList<String> items;
 
 
     @Override
@@ -58,9 +64,15 @@ public class MainActivity extends AppCompatActivity {
         modify = (Button)findViewById(R.id.modify);
         search = (Button)findViewById(R.id.search);
 
+
+        items = new ArrayList<String>();
+
         contentList = (ListView)findViewById(R.id.contentList);
-        mAdapter = new ArrayAdapter<String>(MainActivity.this,0);
+        mAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,items);
         contentList.setAdapter(mAdapter);
+
+
+
 
 
         insert.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +92,12 @@ public class MainActivity extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchData();
+                try{
+                    searchData();
+                }
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -96,12 +113,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchData(){
+
+        mAdapter.clear();
+
         String tmpDate = editDate.getText().toString();
 
         String[] result = db.getResult(tmpDate);
 
         for (int j = 0 ; j < result.length; j++ ){
-            mAdapter.add(result[j]);
+            items.add(result[j]);
         }
 
         mAdapter.notifyDataSetChanged();     // ListView refresh

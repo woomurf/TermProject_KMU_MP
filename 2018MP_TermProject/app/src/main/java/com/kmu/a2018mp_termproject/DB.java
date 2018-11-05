@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 public class DB extends SQLiteOpenHelper {
 
@@ -16,7 +17,7 @@ public class DB extends SQLiteOpenHelper {
     // DB를 만든다.
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE ACCOUNTBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, date TEXT);");
+        db.execSQL("CREATE TABLE ACCOUNTBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, date Date);");
     }
 
     @Override
@@ -27,7 +28,7 @@ public class DB extends SQLiteOpenHelper {
     //DB에 데이터를 삽입 할 때 사용되는 함수. db를 쓰기모드로 열고, 쓴 다음 닫아준다.
     public void insert(String date, String item, int price){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("INSERT INTO ACCOUNTBOOK VALUES(null,'" + item + "', '" + price + "', '" + date + "');");
+        db.execSQL("INSERT INTO ACCOUNTBOOK VALUES(null,'" + item + "', " + price + ", '" + date + "');");
         db.close();
     }
 
@@ -61,7 +62,7 @@ public class DB extends SQLiteOpenHelper {
         int i = 0;
 
         while(cursor.moveToNext()){
-            result[0] += cursor.getString(0)
+            result[i] += cursor.getString(0)
                     + ":"
                     + cursor.getString(1)
                     + " | "
