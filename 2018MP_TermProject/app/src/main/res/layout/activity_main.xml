@@ -24,11 +24,14 @@
                 android:text="날짜"
                 android:textSize="20sp" />
 
-            <EditText
-                android:id="@+id/editDate"
-                android:layout_width="161dp"
-                android:layout_height="wrap_content"
-                android:text="" />
+            <DatePicker
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner"
+                android:id="@+id/dp">
+
+            </DatePicker>
 
         </LinearLayout>
 

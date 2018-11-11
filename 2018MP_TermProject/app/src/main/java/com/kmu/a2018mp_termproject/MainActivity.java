@@ -7,12 +7,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> items;
 
+    private DatePicker dp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         db = new DB(MainActivity.this,"AccountBook.db",null,1);
 
 
-        editDate = (EditText)findViewById(R.id.editDate);date = (TextView)findViewById(R.id.date);
+        date = (TextView)findViewById(R.id.date);
         price = (TextView)findViewById(R.id.price);
         category = (TextView)findViewById(R.id.category);
         content = (TextView)findViewById(R.id.content);
@@ -63,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         delete = (Button)findViewById(R.id.delete);
         modify = (Button)findViewById(R.id.modify);
         search = (Button)findViewById(R.id.search);
+
+        dp = (DatePicker)findViewById(R.id.dp);
 
 
         items = new ArrayList<String>();
@@ -103,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void insertData(){
-
-        String tmpDate = editDate.getText().toString();
+        String tmpDate = "";
+        tmpDate += dp.getYear() + (dp.getMonth()+1) + dp.getDayOfMonth();
         String tmpItem = editContent.getText().toString();
         int tmpPrice = Integer.parseInt(editPrice.getText().toString());
         String tmpCategory = editCategory.getText().toString();
@@ -118,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter.clear();
 
-        String tmpDate = editDate.getText().toString();
+        String tmpDate = "";
+        tmpDate += dp.getYear() + (dp.getMonth()+1) + dp.getDayOfMonth();
 
         String[] result = db.getResult(tmpDate);
 
