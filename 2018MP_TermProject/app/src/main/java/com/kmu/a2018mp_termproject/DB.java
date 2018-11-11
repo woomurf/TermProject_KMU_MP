@@ -8,8 +8,6 @@ import android.widget.Toast;
 
 public class DB extends SQLiteOpenHelper {
 
-    String list[] = {"#tag","#with friends","#with girl friend","#alone"};
-
     public DB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context,name,factory,version);
     }
@@ -19,6 +17,10 @@ public class DB extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE ACCOUNTBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, date Date,category TEXT,tag TEXT);");
+        db.execSQL("CREATE TABLE CATEGORYDB (_id INTEGER PRIMARY KEY AUTOINCREMENT,category TEXT UNIQUE );");
+        db.execSQL("INSERT INTO CATEGORYDB VALUES(category = dinner);");
+        db.execSQL("INSERT INTO CATEGORYDB VALUES(category = lunch);");
+        db.execSQL("INSERT INTO CATEGORYDB VALUES(category = movie);");
     }
 
     @Override
@@ -43,7 +45,7 @@ public class DB extends SQLiteOpenHelper {
     //DB에서 데이터를 삭제한다.
     public void delete(String date,int price ,String item){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM ACCOUNTBOOK WHERE item = "+item+"  AND date = "+date+" AND price ="+price+";");
+        db.execSQL("DELETE FROM ACCOUNTBOOK WHERE item = "+item+"  AND date = "+date+" AND price = price;");
         db.close();
     }
 
@@ -78,7 +80,40 @@ public class DB extends SQLiteOpenHelper {
         return result;
     }
 
-    public String[] getTags(){
+
+    // category 추가
+    public void insertCategory(String c){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("INSERT INTO CATEGORYDB VALUES('"+ c +"');");
+        db.close();
+    }
+
+
+    // category 삭제
+    public void deleteCategory(String c){
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM CATEGORYDB WHERE category = '"+ c +"';");
+        db.close();
+
+    }
+
+    //category를 담고있는 리스트를 반환.
+    public String[] getCategory(){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM CATEGORYDB", null);
+
+        String[] list = {};
+        int i = 0;
+
+        while(cursor.moveToNext()){
+            list[i] = cursor.getString(1);
+            i++;
+        }
+
         return list;
     }
+
+
 }

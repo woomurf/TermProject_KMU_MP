@@ -1,6 +1,8 @@
 package com.kmu.a2018mp_termproject;
 
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         dp = (DatePicker)findViewById(R.id.dp);
 
 
+        // search 했을 때 내용을 보여줄 아이템을 담을 list
         items = new ArrayList<String>();
 
         contentList = (ListView)findViewById(R.id.contentList);
@@ -103,6 +106,48 @@ public class MainActivity extends AppCompatActivity {
                 catch (Exception e){
                     Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        // category를 누르면 팝업이 떠서 category를 고를 수 있다.
+        // 팝업 뜨는걸 dialog라고 한다.
+        editCategory.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+                        MainActivity.this);
+                alertBuilder.setTitle("select category");
+
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        MainActivity.this,
+                        android.R.layout.select_dialog_singlechoice);
+
+                String[] list = db.getCategory();
+
+                for(int i = 0; i < list.length; i++){
+                    adapter.add(list[i]);
+                }
+
+
+                alertBuilder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertBuilder.setAdapter(adapter,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int id) {
+
+
+                        String strName = adapter.getItem(id);
+                        editCategory.setText(strName);
+                    }
+                });
+                alertBuilder.show();
+
             }
         });
     }
