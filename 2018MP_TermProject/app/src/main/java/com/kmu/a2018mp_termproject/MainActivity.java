@@ -107,9 +107,11 @@ public class MainActivity extends AppCompatActivity {
         String tmpDate = editDate.getText().toString();
         String tmpItem = editContent.getText().toString();
         int tmpPrice = Integer.parseInt(editPrice.getText().toString());
+        String tmpCategory = editCategory.getText().toString();
+        String tmpTag = editTag.getText().toString();
 
 
-        db.insert(tmpDate,tmpItem,tmpPrice);
+        db.insert(tmpDate,tmpItem,tmpPrice,tmpCategory,tmpTag);
     }
 
     private void searchData(){

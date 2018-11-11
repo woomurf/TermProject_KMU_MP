@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 public class DB extends SQLiteOpenHelper {
 
+    String list[] = {"#tag","#with friends","#with girl friend","#alone"};
 
     public DB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context,name,factory,version);
@@ -17,7 +18,7 @@ public class DB extends SQLiteOpenHelper {
     // DB를 만든다.
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE ACCOUNTBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, date Date);");
+        db.execSQL("CREATE TABLE ACCOUNTBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, date Date,category TEXT,tag TEXT);");
     }
 
     @Override
@@ -26,9 +27,9 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //DB에 데이터를 삽입 할 때 사용되는 함수. db를 쓰기모드로 열고, 쓴 다음 닫아준다.
-    public void insert(String date, String item, int price){
+    public void insert(String date, String item, int price,String category, String tag){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("INSERT INTO ACCOUNTBOOK VALUES(null,'" + item + "', " + price + ", '" + date + "');");
+        db.execSQL("INSERT INTO ACCOUNTBOOK VALUES(null,'" + item + "', " + price + ", '" + date + "','"+category+"','"+tag+"');");
         db.close();
     }
 
@@ -62,16 +63,22 @@ public class DB extends SQLiteOpenHelper {
         int i = 0;
 
         while(cursor.moveToNext()){
-            result[i] += cursor.getString(0)
+            result[i] += cursor.getString(4)
                     + ":"
                     + cursor.getString(1)
                     + " | "
                     + cursor.getInt(2)
                     + "원"
-                    + cursor.getString(3);
+                    + cursor.getString(3)
+                    + "#"
+                    + cursor.getString(5);
             i++;
         }
 
         return result;
+    }
+
+    public String[] getTags(){
+        return list;
     }
 }
