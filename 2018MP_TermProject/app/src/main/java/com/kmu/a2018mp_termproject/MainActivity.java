@@ -1,6 +1,7 @@
 package com.kmu.a2018mp_termproject;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,17 +18,19 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
-    DB db;
+    DB account_db;
+    categoryDB category_db;
 
     private TextView date;
     private EditText editDate;
     private TextView price;
     private EditText editPrice;
     private TextView category;
-    private EditText editCategory;
+    private TextView editCategory;
     private TextView content;
     private EditText editContent;
     private TextView tag;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Button delete;
     private Button modify;
     private Button search;
+    private Button statistic;
 
     private ListView contentList;
     private ArrayAdapter<String> mAdapter;
@@ -50,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = new DB(MainActivity.this,"AccountBook.db",null,1);
+        account_db = new DB(MainActivity.this,"AccountBook.db",null,1);
+        category_db = new categoryDB(MainActivity.this,"categoryDB.db",null,1);
+
 
 
         date = (TextView)findViewById(R.id.date);
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         tag = (TextView)findViewById(R.id.tag);
 
         editPrice = (EditText)findViewById(R.id.editPrice);
-        editCategory = (EditText)findViewById(R.id.editCategory);
+        editCategory = (TextView)findViewById(R.id.editCategory);
         editContent = (EditText)findViewById(R.id.editContent);
         editTag = (EditText)findViewById(R.id.editTag);
 
@@ -69,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         modify = (Button)findViewById(R.id.modify);
         search = (Button)findViewById(R.id.search);
 
+        statistic = (Button)findViewById(R.id.btn_statistics);
         dp = (DatePicker)findViewById(R.id.dp);
 
 
@@ -122,10 +129,10 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this,
                         android.R.layout.select_dialog_singlechoice);
 
-                String[] list = db.getCategory();
+                Vector<String> list = category_db.getCategory();
 
-                for(int i = 0; i < list.length; i++){
-                    adapter.add(list[i]);
+                for(int i = 0; i < list.size(); i++){
+                    adapter.add(list.elementAt(i));
                 }
 
 
@@ -150,6 +157,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        statistic.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(MainActivity.this,statisticsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void insertData(){
@@ -161,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         String tmpTag = editTag.getText().toString();
 
 
-        db.insert(tmpDate,tmpItem,tmpPrice,tmpCategory,tmpTag);
+        account_db.insert(tmpDate,tmpItem,tmpPrice,tmpCategory,tmpTag);
     }
 
     private void searchData(){
@@ -171,10 +186,10 @@ public class MainActivity extends AppCompatActivity {
         String tmpDate = "";
         tmpDate += dp.getYear() + (dp.getMonth()+1) + dp.getDayOfMonth();
 
-        String[] result = db.getResult(tmpDate);
+        Vector<String> result = account_db.getResult("");
 
-        for (int j = 0 ; j < result.length; j++ ){
-            items.add(result[j]);
+        for (int j = 0 ; j < result.size(); j++ ){
+            items.add(result.elementAt(j));
         }
 
         mAdapter.notifyDataSetChanged();     // ListView refresh
@@ -185,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         String tmpItem = editContent.getText().toString();
         int tmpPrice = Integer.parseInt(editPrice.getText().toString());
 
-        db.delete(tmpDate,tmpPrice,tmpItem);
+        account_db.delete(tmpDate,tmpPrice,tmpItem);
 
     }
 
