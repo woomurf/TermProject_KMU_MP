@@ -169,7 +169,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void insertData(){
         String tmpDate = "";
-        tmpDate += dp.getYear() + (dp.getMonth()+1) + dp.getDayOfMonth();
+        tmpDate += dp.getYear();
+        tmpDate += dp.getMonth()+1;
+        tmpDate += dp.getDayOfMonth();
+
         String tmpItem = editContent.getText().toString();
         int tmpPrice = Integer.parseInt(editPrice.getText().toString());
         String tmpCategory = editCategory.getText().toString();
@@ -177,6 +180,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         account_db.insert(tmpDate,tmpItem,tmpPrice,tmpCategory,tmpTag);
+
+        editContent.setText("");
+        editPrice.setText("");
+        editCategory.setText(" select category ");
+        editTag.setText("");
+
     }
 
     private void searchData(){
@@ -184,7 +193,10 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.clear();
 
         String tmpDate = "";
-        tmpDate += dp.getYear() + (dp.getMonth()+1) + dp.getDayOfMonth();
+        tmpDate += dp.getYear();
+        tmpDate += dp.getMonth()+1;
+        tmpDate += dp.getDayOfMonth();
+
 
         Vector<String> result = account_db.getResult("");
 

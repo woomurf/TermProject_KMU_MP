@@ -17,8 +17,11 @@ import com.github.mikephil.charting.highlight.Highlight;
 import java.util.ArrayList;
 import android.graphics.Color;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.Vector;
 
 public class statisticsActivity extends AppCompatActivity {
@@ -34,12 +37,20 @@ public class statisticsActivity extends AppCompatActivity {
     ArrayList<String> xVals;
     ArrayList<Entry> yvalues;
 
+    ListView billList;
+    ArrayAdapter<String> billAdapter;
+
     protected void onCreate(Bundle bundle){
         super.onCreate(bundle);
         setContentView(R.layout.activity_statistics);
 
         category_db = statisticsActivity.this.openOrCreateDatabase("categoryDB.db",MODE_ENABLE_WRITE_AHEAD_LOGGING,null);
         account_db = statisticsActivity.this.openOrCreateDatabase("AccountBook.db",MODE_ENABLE_WRITE_AHEAD_LOGGING,null);
+
+        billList = (ListView) findViewById(R.id.billList);
+        billAdapter = new ArrayAdapter<String>(statisticsActivity.this,android.R.layout.simple_list_item_1);
+        billList.setAdapter(billAdapter);
+
 
         PieChart pieChart = (PieChart) findViewById(R.id.piechart);
         pieChart.setUsePercentValues(true);
@@ -51,6 +62,7 @@ public class statisticsActivity extends AppCompatActivity {
         xVals = new ArrayList<String>();
 
         getStatistic();
+        getList("","");
 
         PieDataSet dataSet = new PieDataSet(yvalues, "Election Results");
 
@@ -116,10 +128,6 @@ public class statisticsActivity extends AppCompatActivity {
 
             yvalues.add(new Entry(priceRating.elementAt(i),i));
         }
-
-
-
-
     }
 
 
@@ -181,6 +189,39 @@ public class statisticsActivity extends AppCompatActivity {
         }
 
         return price;
+    }
+
+    public void getList(String category, String tag) {
+
+        billAdapter.clear();
+
+        Cursor cursor;
+
+        if (category != "" && tag != "") {
+            cursor = account_db.rawQuery("SELECT * FROM ACCOUNTBOOK WHERE category = '" + category + "', tag = '" + tag + "'", null);
+        } else if (category == "" && tag == "") {
+            cursor = account_db.rawQuery("SELECT * FROM ACCOUNTBOOK", null);
+        } else if (category == "") {
+            cursor = account_db.rawQuery("SELECT * FROM ACCOUNTBOOK WHERE category = '" + category + "'", null);
+        } else {
+            cursor = account_db.rawQuery("SELECT * FROM ACCOUNTBOOK WHERE tag = '" + tag + "'", null);
+        }
+
+
+        while (cursor.moveToNext()) {
+            String query = "";
+
+            query += cursor.getString(4) + "/ "
+                    + cursor.getString(1) + "/ "
+                    + cursor.getInt(2) + "/ "
+                    + cursor.getString(5);
+
+            billAdapter.add(query);
+        }
+
+        billAdapter.notifyDataSetChanged();
+
+
     }
 
 }
