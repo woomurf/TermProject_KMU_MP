@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     String S_tag;
     int tagCount;
 
+    private Button addTag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         Rb_income = (RadioButton)findViewById(R.id.income);
         Rb_expenditure = (RadioButton)findViewById(R.id.expenditure);
         radioGroup = (RadioGroup)findViewById(R.id.radioGroup);
+
+
+        addTag = (Button)findViewById(R.id.addTag);
 
         // 수입이 기본적으로 체크
         radioGroup.check(Rb_income.getId());
@@ -154,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        editTag.setOnClickListener(new View.OnClickListener(){
+        addTag.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
@@ -199,9 +204,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void insertData(){
         String tmpDate = "";
+        String tmpMonth = "";
         tmpDate += dp.getYear();
-        tmpDate += dp.getMonth()+1;
-        tmpDate += dp.getDayOfMonth();
+        tmpMonth += dp.getMonth() +1;
+        if(dp.getMonth()+1 < 10){
+            tmpDate += "0" + tmpMonth;
+        }
+        else{
+            tmpDate += tmpMonth;
+        }
+
+        if(dp.getDayOfMonth() < 10){
+            tmpDate += "0" + dp.getDayOfMonth();
+        }
+        else{
+            tmpDate += dp.getDayOfMonth();
+        }
+        Log.d("Main",tmpDate);
+        Log.d("Main",tmpMonth);
+
 
 
         String tmpItem = editContent.getText().toString();

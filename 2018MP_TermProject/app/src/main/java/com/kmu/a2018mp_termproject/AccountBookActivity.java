@@ -16,6 +16,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.data.Entry;
 
@@ -56,6 +57,9 @@ public class AccountBookActivity extends AppCompatActivity {
     Vector<String> incomeCategory;
     Vector<String> expenditureCategory;
 
+    int incomeMoney;
+    int outMoney;
+
     @Override
     protected void onCreate(Bundle bundle){
         super.onCreate(bundle);
@@ -63,6 +67,7 @@ public class AccountBookActivity extends AppCompatActivity {
 
         account_db = new DB(AccountBookActivity.this,"AccountBook.db",null,1);
         accountDB = account_db.getReadableDatabase();
+
 
         categoryDB = new categoryDB(AccountBookActivity.this,"categoryDB.db",null,1);
 
@@ -85,8 +90,8 @@ public class AccountBookActivity extends AppCompatActivity {
         prev = (ImageButton)findViewById(R.id.prevMonth);
         next = (ImageButton)findViewById(R.id.nextMonth);
 
-        tvIncome = (TextView)findViewById(R.id.income);
-        tvExpenditure = (TextView)findViewById(R.id.expenditure);
+        tvIncome = (TextView)findViewById(R.id.textIncome);
+        tvExpenditure = (TextView)findViewById(R.id.textExpenditure);
         tvBalance = (TextView)findViewById(R.id.balance);
 
 
@@ -97,16 +102,27 @@ public class AccountBookActivity extends AppCompatActivity {
         curMonth = date.get(Calendar.MONTH) + 1;
         curYear = date.get(Calendar.YEAR);
 
-        title_month = curMonth +"";
+        if(curMonth < 10){
+            title_month = "0" + curMonth;
+        }else{
+            title_month = curMonth +"";
+        }
 
         title.setText(title_month + "월");
 
         incomeCategory = categoryDB.getIncomeCategory();
         expenditureCategory = categoryDB.getExpenditureCategory();
 
+        incomeMoney = 0;
+        outMoney = 0;
+
 
 
         setBillList();
+
+        tvIncome.setText(incomeMoney + "원 ");
+        tvExpenditure.setText(outMoney+ "원 ");
+        tvBalance.setText((incomeMoney-outMoney)+ "원 " );
 
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +143,10 @@ public class AccountBookActivity extends AppCompatActivity {
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                incomeMoney = 0;
+                outMoney = 0;
+
                 if(curMonth == 1){
                     curMonth = 12;
                     curYear -= 1;
@@ -134,10 +154,21 @@ public class AccountBookActivity extends AppCompatActivity {
                 else{
                     curMonth -=1;
                 }
-                title_month = curMonth +"";
+
+                if(curMonth < 10){
+                    title_month = "0" + curMonth;
+                }
+                else{
+                    title_month = curMonth +"";
+                }
+
 
                 title.setText(title_month + "월");
                 setBillList();
+
+                tvIncome.setText(incomeMoney + "원 ");
+                tvExpenditure.setText(outMoney+ "원 ");
+                tvBalance.setText((incomeMoney-outMoney)+ "원 " );
 
             }
         });
@@ -145,6 +176,10 @@ public class AccountBookActivity extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                incomeMoney = 0;
+                outMoney = 0;
+
                 if(curMonth == 12){
                     curMonth = 1;
                     curYear ++;
@@ -153,10 +188,19 @@ public class AccountBookActivity extends AppCompatActivity {
                     curMonth += 1;
                 }
 
-                title_month = curMonth +"";
+                if(curMonth < 10){
+                    title_month = "0" + curMonth;
+                }
+                else{
+                    title_month = curMonth +"";
+                }
 
                 title.setText(title_month+"월");
                 setBillList();
+
+                tvIncome.setText(incomeMoney + "원 ");
+                tvExpenditure.setText(outMoney+ "원 ");
+                tvBalance.setText((incomeMoney-outMoney)+ "원 " );
             }
         });
 
@@ -179,8 +223,24 @@ public class AccountBookActivity extends AppCompatActivity {
         for (int i = 0; i < 5; i ++){
             myGroup week = new myGroup(listTitles[i]);
 
-            String minDate = curYear + title_month + (7*i +1);
-            String maxDate =  curYear + title_month + (7*(i+1));
+            int min = 7*i +1;
+            int max = 7*(i+1);
+            String minDate ="";
+            String maxDate ="";
+
+            if(min < 10){
+                minDate += curYear + title_month + "0" +min;
+            }
+            else{
+                minDate += curYear + title_month + min;
+            }
+
+            if(max < 10){
+                maxDate += curYear + title_month +"0"+ max;
+            }
+            else{
+                maxDate += curYear + title_month + max;
+            }
             Log.d("account",minDate);
             Log.d("account",maxDate);
             Cursor cursor;
@@ -195,6 +255,8 @@ public class AccountBookActivity extends AppCompatActivity {
 
                     week.child.add(row);
 
+                    incomeMoney += cursor.getInt(2);
+
                 }
                 else{
                     String row = "-- " + cursor.getString(3) + " "
@@ -202,6 +264,8 @@ public class AccountBookActivity extends AppCompatActivity {
                             + cursor.getInt(2) + "원";
 
                     week.child.add(row);
+
+                    outMoney += cursor.getInt(2);
                 }
             }
 

@@ -90,7 +90,7 @@ public class statisticsActivity extends AppCompatActivity {
         month = date.get(Calendar.MONTH)+1;
         year = date.get(Calendar.YEAR);
 
-        title_month.setText(month);
+        title_month.setText(month+"");
 
         ImageButton prev = (ImageButton)findViewById(R.id.btn_prev);
         ImageButton next = (ImageButton)findViewById(R.id.btn_next);
@@ -218,12 +218,12 @@ public class statisticsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(month == 1){
                     month = 12;
-                    title_month.setText(month);
+                    title_month.setText(month+"");
                     year--;
                 }
                 else{
                     month--;
-                    title_month.setText(month);
+                    title_month.setText(month+"");
                 }
             }
         });
@@ -234,11 +234,11 @@ public class statisticsActivity extends AppCompatActivity {
                 if(month == 12){
                     month = 1;
                     year++;
-                    title_month.setText(month);
+                    title_month.setText(month+"");
                 }
                 else{
                     month++;
-                    title_month.setText(month);
+                    title_month.setText(month+"");
                 }
             }
         });
