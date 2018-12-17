@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     DB account_db;
     categoryDB category_db;
+    TagDB tag_db;
 
     private TextView date;
     private EditText editDate;
@@ -34,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView content;
     private EditText editContent;
     private TextView tag;
-    private EditText editTag;
+    private TextView editTag;
 
     private Button insert;
-    private Button delete;
-    private Button modify;
-    private Button search;
-    private Button statistic;
+
+    private RadioButton Rb_income;
+    private RadioButton Rb_expenditure;
+    private RadioGroup radioGroup;
 
     private ListView contentList;
     private ArrayAdapter<String> mAdapter;
@@ -49,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
     private DatePicker dp;
 
+    String S_tag;
+    int tagCount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         account_db = new DB(MainActivity.this,"AccountBook.db",null,1);
         category_db = new categoryDB(MainActivity.this,"categoryDB.db",null,1);
+        tag_db = new TagDB(MainActivity.this,"tagDB.db",null,1);
+        category_db.basicData();
+        tag_db.basicData();
 
 
 
@@ -68,24 +77,23 @@ public class MainActivity extends AppCompatActivity {
         editPrice = (EditText)findViewById(R.id.editPrice);
         editCategory = (TextView)findViewById(R.id.editCategory);
         editContent = (EditText)findViewById(R.id.editContent);
-        editTag = (EditText)findViewById(R.id.editTag);
+        editTag = (TextView) findViewById(R.id.editTag);
 
         insert = (Button)findViewById(R.id.insert);
-        delete = (Button)findViewById(R.id.delete);
-        modify = (Button)findViewById(R.id.modify);
-        search = (Button)findViewById(R.id.search);
 
-        statistic = (Button)findViewById(R.id.btn_statistics);
+
+        Rb_income = (RadioButton)findViewById(R.id.income);
+        Rb_expenditure = (RadioButton)findViewById(R.id.expenditure);
+        radioGroup = (RadioGroup)findViewById(R.id.radioGroup);
+
+        // 수입이 기본적으로 체크
+        radioGroup.check(Rb_income.getId());
+
+
         dp = (DatePicker)findViewById(R.id.dp);
 
-
-        // search 했을 때 내용을 보여줄 아이템을 담을 list
-        items = new ArrayList<String>();
-
-        contentList = (ListView)findViewById(R.id.contentList);
-        mAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,items);
-        contentList.setAdapter(mAdapter);
-
+        S_tag = "";
+        tagCount = 0;
 
 
 
@@ -94,25 +102,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insertData();
-            }
-        });
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteData();
-            }
-        });
-
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try{
-                    searchData();
-                }
-                catch (Exception e){
-                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-                }
             }
         });
 
@@ -129,7 +118,14 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this,
                         android.R.layout.select_dialog_singlechoice);
 
-                Vector<String> list = category_db.getCategory();
+                Vector<String> list;
+                if(Rb_expenditure.isChecked()){
+                    list = category_db.getExpenditureCategory();
+                }
+                else{
+                    list = category_db.getIncomeCategory();
+                }
+
 
                 for(int i = 0; i < list.size(); i++){
                     adapter.add(list.elementAt(i));
@@ -144,27 +140,61 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 alertBuilder.setAdapter(adapter,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,
-                                        int id) {
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
 
 
-                        String strName = adapter.getItem(id);
-                        editCategory.setText(strName);
-                    }
-                });
+                                String strName = adapter.getItem(id);
+                                editCategory.setText(strName);
+                            }
+                        });
                 alertBuilder.show();
 
             }
         });
 
-        statistic.setOnClickListener(new View.OnClickListener(){
+        editTag.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent intent = new Intent(MainActivity.this,statisticsActivity.class);
-                startActivity(intent);
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+                        MainActivity.this);
+                alertBuilder.setTitle("select Tag");
+
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        MainActivity.this,
+                        android.R.layout.select_dialog_singlechoice);
+
+                Vector<String> list = tag_db.getTag();
+
+                for(int i = 0; i < list.size(); i++){
+                    adapter.add(list.elementAt(i));
+                }
+
+
+                alertBuilder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertBuilder.setAdapter(adapter,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+
+
+                                String strName = adapter.getItem(id);
+
+                                editTag.setText(strName);
+                            }
+                        });
+                alertBuilder.show();
+
             }
         });
+
     }
 
     private void insertData(){
@@ -172,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
         tmpDate += dp.getYear();
         tmpDate += dp.getMonth()+1;
         tmpDate += dp.getDayOfMonth();
+
 
         String tmpItem = editContent.getText().toString();
         int tmpPrice = Integer.parseInt(editPrice.getText().toString());
@@ -183,11 +214,11 @@ public class MainActivity extends AppCompatActivity {
 
         editContent.setText("");
         editPrice.setText("");
-        editCategory.setText(" select category ");
-        editTag.setText("");
+        editCategory.setText(" Select Category ");
+        editTag.setText("  Select Tag");
 
     }
-
+/*
     private void searchData(){
 
         mAdapter.clear();
@@ -206,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter.notifyDataSetChanged();     // ListView refresh
     }
-
+*/
     private void deleteData(){
         String tmpDate = editDate.getText().toString();
         String tmpItem = editContent.getText().toString();

@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 public class DB extends SQLiteOpenHelper {
@@ -19,6 +21,7 @@ public class DB extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS ACCOUNTBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, date Date,category TEXT,tag TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS MONEY (date Date,money INTEGER);");
     }
 
     @Override
@@ -32,6 +35,26 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS ACCOUNTBOOK");
         onCreate(db);
     }
+
+    public void saveMoneyData(int money){
+        SQLiteDatabase db = getWritableDatabase();
+
+        Calendar c = Calendar.getInstance();
+
+        db.execSQL("INSERT INTO MONEY VALUES("+c+","+money+");");
+
+    }
+
+    public int loadMoneyData(){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM MONEY ORDER BY money LIMIT 1",null);
+
+        int money = cursor.getInt(1);
+
+        return money;
+    }
+
     //DB에 데이터를 삽입 할 때 사용되는 함수. db를 쓰기모드로 열고, 쓴 다음 닫아준다.
     public void insert(String date, String item, int price,String category, String tag){
         SQLiteDatabase db = getWritableDatabase();

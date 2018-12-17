@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageButton
@@ -20,13 +20,30 @@
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/piegraph" />
 
+        <ImageButton
+            android:id="@+id/prevMonth"
+            android:layout_width="21dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/left_arrow"
+            android:scaleType="fitCenter"/>
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Month"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:textSize="20dp"/>
+
+        <ImageButton
+            android:id="@+id/nextMonth"
+            android:layout_width="21dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/right_arrow"
+            android:scaleType="fitCenter"/>
 
         <Button
             android:id="@+id/add"
@@ -36,9 +53,51 @@
             android:text="add" />
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <ListView
-        android:id="@+id/bills"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수입 : "/>
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textIncome"
+            android:text=""/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지출 : "/>
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textExpenditure"
+            android:text=""/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="잔액 : "/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/balance"
+            android:text=""/>
+    </LinearLayout>
+
+    <ExpandableListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:id="@+id/weekBill"
+        >
+
+
+    </ExpandableListView>
 </LinearLayout>

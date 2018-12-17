@@ -11,6 +11,10 @@ public class myGroup {
         child = new ArrayList<String>();
     }
 
+    public int getSize(){
+        return child.size();
+    }
+
 
 
 }
